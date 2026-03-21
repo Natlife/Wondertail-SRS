@@ -57,6 +57,15 @@ package "Story Module" {
         createdUser: bigint
         updatedAt: Timestamp
         updatedUser: bigint
+        approvedBy: bigint <<FK>>
+        approvedAt: Timestamp 
+        rejectedReason: string
+        publishedAt: Timestamp
+        version: int
+        ageGroup: string
+        duration: int
+        topicId: bigint <<FK>>
+        isPremium: boolean 
         imageUrl: string
         audioUrl: string
         name: string
@@ -79,7 +88,7 @@ package "Story Module" {
     entity StoryFeedback{
         id: bigint <<PK>>
         status: int
-        createdAt: datTimestampe
+        createdAt: Timestamp
         createdUser: bigint
         updatedAt: Timestamp
         updatedUser: bigint
@@ -164,6 +173,9 @@ package "Logs & Payments Module" {
         userId: bigint <<FK>>
         storyBankId: bigint <<FK>>
         content: jsonb
+        createdAt: Timestamp
+        updatedAt: Timestamp
+        completedAt: Timestamp  
     }
 
     entity AssignmentLog{
@@ -250,6 +262,9 @@ package "Game Module" {
         name: string
         description: string
         view: bigint
+        ageGroup: string
+        topicId: bigint <<FK>>
+        isPremium: boolean
     }
 
     entity GameType{
@@ -261,112 +276,46 @@ package "Game Module" {
         updatedUser: bigint
         name: string
     }
+
+    entity GameLog {
+    id: bigint <<PK>>
+    status: int
+    createdAt: Timestamp
+    userId: bigint <<FK>>
+    gameBankId: bigint <<FK>>
+    score: int
+    finishedAt: Timestamp
+}
 }
 
-package "Newfeed Module"{
-
-    entity Post {
+package "Notification Module" {
+    entity Notification {
         id: bigint <<PK>>
-        createdUser: bigint <<FK>> 
-        updatedUser: bigint <<FK>>
-        categoryId: bigint <<FK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
         title: string
-        summary: string
-        status: PostStatus
-        createdAt: Timestamp
-        updatedAt: Timestamp
-        publishedAt: dateTimestamp
-    }
-
-    ' note right of Post
-    '     PostStatus:
-    '     0 = DRAFT
-    '     1 = PENDING
-    '     2 = APPROVED
-    '     3 = REJECTED
-    ' end note
-
-    entity PostContent {
-        id: bigint <<PK>>
-        postId: bigint <<FK>>
-        contentType: ContentType
-        sortOrder: int
-        createdAt: Timestamp
-        updatedAt: Timestamp
-        richText: text
-        imageUrl: string
-        videoUrl: string
-        videoDuration: int
-        refType: RefType
-        refId: bigint
-    }
-
-    ' note right of PostContent
-    '     ContentType:
-    '     0 = RICH_TEXT  → richText
-    '     1 = IMAGE      → imageUrl
-    '     2 = VIDEO      → videoUrl + videoDuration
-    '     3 = LINK_STORY → refId → StoryBank.id
-    '     4 = LINK_GAME  → refId → GameBank.id
-    '     ----
-    '     sortOrder: thứ tự render block content
-    ' end note
-
-    entity PostCategory {
-        id: bigint <<PK>>
-        name: string <<UNIQUE>>
-        description: string
-        status: int
-    }
-
-    entity PostModerationLog {
-        id: bigint <<PK>>
-        postId: bigint <<FK>>
-        moderatorId: bigint <<FK>>
-        action: ModerationAction
-        note: string
-        createdAt: timestamp
-    }
-
-    ' note right of PostModerationLog
-    '     ModerationAction:
-    '     0 = SUBMITTED
-    '     1 = APPROVED
-    '     2 = REJECTED
-    '     ----
-
-    entity PostReaction {
-        id: bigint <<PK>>
-        postId: bigint <<FK>>
-        userId: bigint <<FK>>
-        reactionType: ReactionType
-        createdAt: timestamp
-    }
-
-    ' note bottom of PostReaction
-    '     UNIQUE CONSTRAINT: (postId, userId)
-    '     UPDATE reactionType khi user đổi react
-    ' end note
-
-    entity PostComment {
-        id: bigint <<PK>>
-        postId: bigint <<FK>>
-        userId: bigint <<FK>>
-        parentId: bigint <<FK>>
         content: string
-        status: int
-        createdAt: timestamp
-        updatedAt: timestamp
+        type: NotificationType
+        isGlobal: boolean
     }
 
-    ' note bottom of PostComment
-    '     parentId self-references PostComment.id
-    '     NULL     = top-level comment
-    '     NOT NULL = reply to comment
-    ' end note
+    entity NotificationTarget {
+        id: bigint <<PK>>
+        notificationId: bigint <<FK>>
+        userId: bigint <<FK>>
+    }
 
+    entity NotificationLog {
+        id: bigint <<PK>>
+        notificationId: bigint <<FK>>
+        userId: bigint <<FK>>
+        isRead: boolean
+        readAt: Timestamp
+    }
 }
-
 
 
 ' package "Enum"{
@@ -425,6 +374,17 @@ ParentPayment }o--|| PaymentType
 User ||--|| Role
 User ||--o{ BlackListStory
 User ||--o{ TimeLimit
+User ||--o{ StoryBank : approves
+User ||--o{ StoryBank : creates
+User ||--o{ AssignmentLog
+User ||--o{ PreorderStory
+User ||--o{ ChildrenStoryLog
+User ||--o{ StoryFeedback
+
+Notification ||--o{ NotificationTarget : targets
+Notification ||--o{ NotificationLog : logs
+NotificationTarget }o--|| User
+NotificationLog }o--|| User
 
 Permission }o--|| Module
 Permission }o--|| Action
@@ -432,19 +392,8 @@ Permission }o--|| Action
 RolePermission }o--|| Role
 RolePermission }o--|| Permission
 
-GameBank ||--|| GameType
+GameBank }o--|| GameType
 
-Post ||--o{ PostContent       : "contains"
-Post }o--||  PostCategory     : "belongs to"
-Post ||--o{ PostModerationLog : "audit trail"
-Post ||--o{ PostReaction      : "receives reactions"
-Post ||--o{ PostComment       : "has comments"
-PostComment }o--o| PostComment : "replies to"
-
-Post }o--|| User              : "created by"
-PostModerationLog }o--|| User : "actioned by"
-PostReaction }o--|| User      : "reacted by"
-PostComment }o--|| User       : "commented by"
 
 @enduml
 
