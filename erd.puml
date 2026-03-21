@@ -53,7 +53,7 @@ package "Story Module" {
     entity StoryFeedback{
         id: bigint <<PK>>
         status: int
-        createdAt: datTimestampe
+        createdAt: Timestamp
         createdUser: bigint <<FK>>
         updatedAt: Timestamp
         updatedUser: bigint
@@ -96,14 +96,22 @@ package "Story Module" {
         version: text
         title: text
         author: text
+
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        approvedBy: bigint <<FK>>
+        approvedAt: Timestamp
+        rejectedReason: string
+        duration: int
+        isPremium: boolean 
+
         description: text
-        targetAgeMin: int
-        targetAgeMax: int
         coverImage: bigint <<FK>>
         entryPoint: text
-        capabilities: text[]
         localization: text[]
-        createdAt: timestamptz
     }
 
     entity StoryState {
@@ -137,7 +145,7 @@ package "Story Module" {
         stateId: text
         content: text
         embedding: vector(768)
-        createdAt: timestamptz
+        createdAt: Timestamp
     }
 
     entity ActorConfig {
@@ -185,7 +193,7 @@ package "Assignment Module" {
         description: string
         total: bigint
         isShuffle: boolean
-    
+        isPremium: boolean
     }
 
     entity QuestionBank{
@@ -323,14 +331,14 @@ package "Game Module" {
     }
 
     entity GameLog {
-    id: bigint <<PK>>
-    status: int
-    createdAt: Timestamp
-    userId: bigint <<FK>>
-    gameBankId: bigint <<FK>>
-    score: int
-    finishedAt: Timestamp
-}
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        userId: bigint <<FK>>
+        gameBankId: bigint <<FK>>
+        score: int
+        finishedAt: Timestamp
+    }
 }
 
 package "Notification Module" {
@@ -344,7 +352,7 @@ package "Notification Module" {
         title: string
         content: string
         type: NotificationType
-        isGlobal: boolean
+        isBroadcast: boolean
     }
 
     entity NotificationTarget {
@@ -426,10 +434,13 @@ User ||--|| Role
 User ||--o{ BlackListStory
 User ||--o{ TimeLimit
 User ||--o{ StoryFeedback : "creates"
+User ||--o{ Story : approves
+User ||--o{ Story : creates
 User ||--o{ AssignmentLog
 User ||--o{ PreorderStory
 User ||--o{ ChildrenStoryLog
 User ||--o{ StoryFeedback
+User ||--o{ GameLog
 
 Notification ||--o{ NotificationTarget : targets
 Notification ||--o{ NotificationLog : logs
