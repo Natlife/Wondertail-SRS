@@ -1,0 +1,450 @@
+
+@startuml
+skinparam nodesep 60
+skinparam ranksep 80
+top to bottom direction
+
+package "User Module" {
+    entity User {
+        id: bigint <<PK>>
+        roleId: bigint <<FK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        parentId: bigint
+        name:string
+        userName: string
+        dob: date
+        phone: string
+        email: string
+        password: encoded string
+    }
+
+    entity Role{
+        id: bigint <<PK>>
+        name: string
+    }
+    entity Module{
+        id: bigint <<PK>>
+        name: string
+        path: string
+    }
+    entity Action{
+        id: bigint <<PK>>
+        name: string
+        path: string
+    }
+    entity Permission{
+        id: bigint <<PK>>
+        moduleId: bigint <<FK>>
+        actionId: bigint <<FK>>
+        name: string
+    }
+    entity RolePermission{
+        id: bigint <<PK>>
+        roleId: bigint <<FK>>
+        permissionId: bigint <<FK>>
+    }
+}
+
+package "Story Module" {
+    entity StoryBank{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        imageUrl: string
+        audioUrl: string
+        name: string
+        description: string
+        view: bigint
+    }
+    
+    entity StoryScene{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        storyBankId: bigint <<FK>>
+        name:string
+        description:string
+    }
+    
+    entity StoryFeedback{
+        id: bigint <<PK>>
+        status: int
+        createdAt: datTimestampe
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        storyBankId: bigint <<FK>>
+        rate: bigint
+        content: string
+    }
+    entity GraphicAsset{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        storyBankId: bigint <<FK>>
+        storySceneId: bigint <<FK>>
+        name:string
+        description: string
+        imageUrl: string
+        type: GraphicType
+    }
+    entity AudioAsset{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        storyBankId: bigint <<FK>>
+        storySceneId: bigint <<FK>>
+        name:string
+        description: string
+        audioUrl: string
+        type: AudioType
+    }
+    
+}
+
+package "Assignment Module" {
+     entity Assignment{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        topicId: bigint <<FK>>
+        name: string
+        description: string
+        total: bigint
+        isShuffle: boolean
+    
+    }
+
+    entity QuestionBank{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        assignmentId: bigint <<FK>>
+        questionList: jsonb
+    }
+
+    entity Topic{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name:string
+        description: string
+    }
+}
+
+package "Logs & Payments Module" {
+    entity ChildrenStoryLog{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyBankId: bigint <<FK>>
+        content: jsonb
+    }
+
+    entity AssignmentLog{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        assignmentId: bigint <<FK>>
+        userId : bigint <<FK>>
+        questionList: jsonb
+        finishedAt: Timestamp
+        version: int
+    }
+
+    entity PreorderStory{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyBankId: bigint <<FK>>
+        orderDate: date
+    }
+
+    entity BlackListStory{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyBankId: bigint <<FK>>
+    }
+
+    entity TimeLimit{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        userId: bigint<<FK>>
+        limitDate: date
+        limitTime: double
+    }
+
+    entity ParentPayment{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        userId: bigint <<FK>>
+        total: bigint
+        paymentTypeId: bigint <<FK>>
+    }
+
+    entity PaymentType{
+        id: bigint <<PK>>
+        name: string 
+    }
+
+    entity PaymentDescription{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        parentPaymentId: bigint <<FK>>
+        startDate: Timestamp
+        endDate: Timestamp
+    }
+}
+
+package "Game Module" {
+    entity GameBank{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        gameTypeId: bigint <<FK>>
+        imageUrl: string
+        name: string
+        description: string
+        view: bigint
+    }
+
+    entity GameType{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name: string
+    }
+}
+
+package "Newfeed Module"{
+
+    entity Post {
+        id: bigint <<PK>>
+        createdUser: bigint <<FK>> 
+        updatedUser: bigint <<FK>>
+        categoryId: bigint <<FK>>
+        title: string
+        summary: string
+        status: PostStatus
+        createdAt: Timestamp
+        updatedAt: Timestamp
+        publishedAt: dateTimestamp
+    }
+
+    ' note right of Post
+    '     PostStatus:
+    '     0 = DRAFT
+    '     1 = PENDING
+    '     2 = APPROVED
+    '     3 = REJECTED
+    ' end note
+
+    entity PostContent {
+        id: bigint <<PK>>
+        postId: bigint <<FK>>
+        contentType: ContentType
+        sortOrder: int
+        createdAt: Timestamp
+        updatedAt: Timestamp
+        richText: text
+        imageUrl: string
+        videoUrl: string
+        videoDuration: int
+        refType: RefType
+        refId: bigint
+    }
+
+    ' note right of PostContent
+    '     ContentType:
+    '     0 = RICH_TEXT  → richText
+    '     1 = IMAGE      → imageUrl
+    '     2 = VIDEO      → videoUrl + videoDuration
+    '     3 = LINK_STORY → refId → StoryBank.id
+    '     4 = LINK_GAME  → refId → GameBank.id
+    '     ----
+    '     sortOrder: thứ tự render block content
+    ' end note
+
+    entity PostCategory {
+        id: bigint <<PK>>
+        name: string <<UNIQUE>>
+        description: string
+        status: int
+    }
+
+    entity PostModerationLog {
+        id: bigint <<PK>>
+        postId: bigint <<FK>>
+        moderatorId: bigint <<FK>>
+        action: ModerationAction
+        note: string
+        createdAt: timestamp
+    }
+
+    ' note right of PostModerationLog
+    '     ModerationAction:
+    '     0 = SUBMITTED
+    '     1 = APPROVED
+    '     2 = REJECTED
+    '     ----
+
+    entity PostReaction {
+        id: bigint <<PK>>
+        postId: bigint <<FK>>
+        userId: bigint <<FK>>
+        reactionType: ReactionType
+        createdAt: timestamp
+    }
+
+    ' note bottom of PostReaction
+    '     UNIQUE CONSTRAINT: (postId, userId)
+    '     UPDATE reactionType khi user đổi react
+    ' end note
+
+    entity PostComment {
+        id: bigint <<PK>>
+        postId: bigint <<FK>>
+        userId: bigint <<FK>>
+        parentId: bigint <<FK>>
+        content: string
+        status: int
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    ' note bottom of PostComment
+    '     parentId self-references PostComment.id
+    '     NULL     = top-level comment
+    '     NOT NULL = reply to comment
+    ' end note
+
+}
+
+
+
+' package "Enum"{
+'     enum UserStatus{
+'         0: ACTIVE
+'         1: INACTIVE
+'         2: BANNED
+'     }
+'     enum StoryStatus{
+'        0:PENDING
+'         1:CERTIFIED
+'         2:UNCERTIFIED
+'     }
+'     enum StoryLogStatus{
+'         0: INPROGRESS
+'         1: COMPLETED
+'     }
+'     enum PaymentStatus{
+'         0: PENDING
+'         1: COMPLETED
+'     }
+'     enum GraphicType{
+'         Character
+'         Background
+'         Animation
+'     }
+'     enum AudioType{
+'         VOICEOVER
+'         SOUNDEFFECT
+'         MUSIC
+'     }
+' }
+
+User }o--o| User : parent of
+
+StoryBank ||-down-o{ StoryScene : has
+StoryScene }--o{ GraphicAsset : has
+StoryScene }--o{ AudioAsset : has
+StoryBank ||--o{ StoryFeedback : has
+
+Assignment }o-left-|| Topic
+Assignment ||-right-|| QuestionBank
+
+StoryBank ||-down-o{ ChildrenStoryLog
+StoryBank ||-down-o{ PreorderStory
+StoryBank ||-down-o{ GraphicAsset
+StoryBank ||-down-o{ AudioAsset
+
+
+Assignment ||-down-o{ AssignmentLog
+
+ParentPayment ||-right-o{ PaymentDescription : has
+ParentPayment }o--|| User
+ParentPayment }o--|| PaymentType
+
+User ||--|| Role
+User ||--o{ BlackListStory
+User ||--o{ TimeLimit
+
+Permission }o--|| Module
+Permission }o--|| Action
+
+RolePermission }o--|| Role
+RolePermission }o--|| Permission
+
+GameBank ||--|| GameType
+
+Post ||--o{ PostContent       : "contains"
+Post }o--||  PostCategory     : "belongs to"
+Post ||--o{ PostModerationLog : "audit trail"
+Post ||--o{ PostReaction      : "receives reactions"
+Post ||--o{ PostComment       : "has comments"
+PostComment }o--o| PostComment : "replies to"
+
+Post }o--|| User              : "created by"
+PostModerationLog }o--|| User : "actioned by"
+PostReaction }o--|| User      : "reacted by"
+PostComment }o--|| User       : "commented by"
+
+@enduml
+
