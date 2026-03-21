@@ -224,7 +224,7 @@ package "Logs & Payments Module" {
         id: bigint <<PK>>
         status: int
         userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
+        storyId: bigint <<FK>>
         content: jsonb
         createdAt: Timestamp
         updatedAt: Timestamp
@@ -249,7 +249,7 @@ package "Logs & Payments Module" {
         id: bigint <<PK>>
         status: int
         userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
+        storyId: bigint <<FK>>
         orderDate: date
     }
 
@@ -257,7 +257,7 @@ package "Logs & Payments Module" {
         id: bigint <<PK>>
         status: int
         userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
+        storyId: bigint <<FK>>
     }
 
     entity TimeLimit{
@@ -282,23 +282,13 @@ package "Logs & Payments Module" {
         userId: bigint <<FK>>
         total: bigint
         paymentTypeId: bigint <<FK>>
+        startDate: Timestamp
+        endDate: Timestamp
     }
 
     entity PaymentType{
         id: bigint <<PK>>
         name: string 
-    }
-
-    entity PaymentDescription{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        parentPaymentId: bigint <<FK>>
-        startDate: Timestamp
-        endDate: Timestamp
     }
 }
 
@@ -426,12 +416,13 @@ ScriptLine }o--|| AudioAsset
 
 Assignment ||-down-o{ AssignmentLog
 
-ParentPayment ||-right-o{ PaymentDescription : has
+BlackListStory ||--o{ Story
+
 ParentPayment }o--|| User
 ParentPayment }o--|| PaymentType
 
 User ||--|| Role
-User ||--o{ BlackListStory
+User ||-right-|| BlackListStory
 User ||--o{ TimeLimit
 User ||--o{ StoryFeedback : "creates"
 User ||--o{ Story : approves
