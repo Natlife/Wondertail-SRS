@@ -49,44 +49,23 @@ package "User Module" {
     }
 }
 
-package "Story Module" {
-    entity StoryBank{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        imageUrl: string
-        audioUrl: string
-        name: string
-        description: string
-        view: bigint
-    }
-    
-    entity StoryScene{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        name:string
-        description:string
-    }
-    
+package "Story Module" {        
     entity StoryFeedback{
         id: bigint <<PK>>
         status: int
         createdAt: datTimestampe
-        createdUser: bigint
+        createdUser: bigint <<FK>>
         updatedAt: Timestamp
         updatedUser: bigint
-        storyBankId: bigint <<FK>>
+        storyId: bigint <<FK>>
         rate: bigint
         content: string
     }
+
+    ' note right of StoryFeedback
+    '     UNIQUE CONSTRAINT: (createdUser, storyId)
+    ' end note
+
     entity GraphicAsset{
         id: bigint <<PK>>
         status: int
@@ -94,8 +73,6 @@ package "Story Module" {
         createdUser: bigint
         updatedAt: Timestamp
         updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        storySceneId: bigint <<FK>>
         name:string
         description: string
         imageUrl: string
@@ -108,12 +85,89 @@ package "Story Module" {
         createdUser: bigint
         updatedAt: Timestamp
         updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        storySceneId: bigint <<FK>>
         name:string
         description: string
         audioUrl: string
         type: AudioType
+    }
+
+    entity Story {
+        id: text <<PK>>
+        version: text
+        title: text
+        author: text
+        description: text
+        targetAgeMin: int
+        targetAgeMax: int
+        coverImage: bigint <<FK>>
+        entryPoint: text
+        capabilities: text[]
+        localization: text[]
+        createdAt: timestamptz
+    }
+
+    entity StoryState {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        type: text
+        background: text
+        music: text
+        actors: jsonb
+        onEnter: jsonb
+        transitions: jsonb
+        aiContext: text
+    }
+
+    entity StoryScript {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        language: text
+        lines: jsonb
+    }
+
+    entity StoryIntent {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        keywords: text[]
+    }
+
+    entity StoryEmbedding {
+        id: bigserial <<PK>>
+        storyId: text <<FK>>
+        stateId: text
+        content: text
+        embedding: vector(768)
+        createdAt: timestamptz
+    }
+
+    entity ActorConfig {
+        actorId: string
+        riveAsset: string
+        stateMachineName: string
+        riveInputs: object
+        position: object
+    }
+
+    entity OnEnterAction {
+        playScript: string
+        actorAnimations: object
+    }
+
+    entity Transition {
+        on: string
+        intentId: string
+        targetState: string
+    }
+
+    entity ScriptLine {
+        id: string
+        actorId: string
+        text: string
+        audioAsset: bigint <<FK>>
+        ttsConfig: object
+        sfx: string
+        waitAfter: integer
+        animationTrigger: string
     }
     
 }
@@ -402,18 +456,24 @@ package "Newfeed Module"{
 
 User }o--o| User : parent of
 
-StoryBank ||-down-o{ StoryScene : has
-StoryScene }--o{ GraphicAsset : has
-StoryScene }--o{ AudioAsset : has
-StoryBank ||--o{ StoryFeedback : has
-
 Assignment }o-left-|| Topic
 Assignment ||-right-|| QuestionBank
 
-StoryBank ||-down-o{ ChildrenStoryLog
-StoryBank ||-down-o{ PreorderStory
-StoryBank ||-down-o{ GraphicAsset
-StoryBank ||-down-o{ AudioAsset
+Story ||-down-o{ ChildrenStoryLog
+Story ||-down-o{ PreorderStory
+Story ||--o{ StoryFeedback
+
+Story ||--o{ StoryState : "1 to many"
+Story ||--o{ StoryScript : "1 to many"
+Story ||--o{ StoryIntent : "1 to many"
+Story ||--o{ StoryEmbedding : "1 to many"
+Story }o--|| GraphicAsset
+
+StoryState *-- ActorConfig : "contains in actors (jsonb)"
+StoryState *-- OnEnterAction : "contains in on_enter (jsonb)"
+StoryState *-- Transition : "contains in transitions (jsonb)"
+StoryScript *-- ScriptLine : "contains in lines (jsonb)"
+ScriptLine }o--|| AudioAsset
 
 
 Assignment ||-down-o{ AssignmentLog
@@ -425,6 +485,7 @@ ParentPayment }o--|| PaymentType
 User ||--|| Role
 User ||--o{ BlackListStory
 User ||--o{ TimeLimit
+User ||--o{ StoryFeedback : "creates"
 
 Permission }o--|| Module
 Permission }o--|| Action

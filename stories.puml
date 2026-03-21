@@ -1,0 +1,76 @@
+@startuml
+' Hide methods as this is an ERD
+hide methods
+
+' Styling
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2c3e50
+    BorderColor #2c3e50
+}
+skinparam roundcorner 5
+
+' --- Entities ---
+
+entity "stories" as stories {
+  * **id** : text <<PK>>
+  --
+  * version : text
+  * title : text
+  * author : text
+  description : text
+  target_age_min : int
+  target_age_max : int
+  cover_url : text
+  * entry_point : text
+  * capabilities : text[]
+  * localization : text[]
+  * created_at : timestamptz
+}
+
+entity "story_states" as story_states {
+  * **id** : text <<PK>>
+  * **story_id** : text <<PK>> <<FK>>
+  --
+  * type : text
+  * background : text
+  music : text
+  * actors : jsonb
+  on_enter : jsonb
+  * transitions : jsonb
+  ai_context : text
+}
+
+entity "story_scripts" as story_scripts {
+  * **id** : text <<PK>>
+  * **story_id** : text <<PK>> <<FK>>
+  --
+  * language : text
+  * lines : jsonb
+}
+
+entity "story_intents" as story_intents {
+  * **id** : text <<PK>>
+  * **story_id** : text <<PK>> <<FK>>
+  --
+  * keywords : text[]
+}
+
+entity "story_embeddings" as story_embeddings {
+  * **id** : bigserial <<PK>>
+  --
+  * **story_id** : text <<FK>>
+  state_id : text
+  * content : text
+  embedding : vector(768)
+  * created_at : timestamptz
+}
+
+' --- Relationships ---
+
+stories ||--o{ story_states : "1 to many"
+stories ||--o{ story_scripts : "1 to many"
+stories ||--o{ story_intents : "1 to many"
+stories ||--o{ story_embeddings : "1 to many"
+
+@enduml
