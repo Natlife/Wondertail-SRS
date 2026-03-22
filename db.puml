@@ -1,0 +1,462 @@
+
+@startuml
+skinparam nodesep 60
+skinparam ranksep 80
+top to bottom direction
+
+package "User Module" {
+    entity User {
+        id: bigint <<PK>>
+        roleId: bigint <<FK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        parentId: bigint
+        name:string
+        userName: string
+        dob: date
+        phone: string
+        email: string
+        password: encoded string
+    }
+
+    entity Role{
+        id: bigint <<PK>>
+        name: string
+    }
+    entity Module{
+        id: bigint <<PK>>
+        name: string
+        path: string
+    }
+    entity Action{
+        id: bigint <<PK>>
+        name: string
+        path: string
+    }
+    entity Permission{
+        id: bigint <<PK>>
+        moduleId: bigint <<FK>>
+        actionId: bigint <<FK>>
+        name: string
+    }
+    entity RolePermission{
+        id: bigint <<PK>>
+        roleId: bigint <<FK>>
+        permissionId: bigint <<FK>>
+    }
+}
+
+package "Story Module" {        
+    entity StoryFeedback{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint <<FK>>
+        updatedAt: Timestamp
+        updatedUser: bigint
+        storyId: bigint <<FK>>
+        rate: bigint
+        content: string
+    }
+
+    ' note right of StoryFeedback
+    '     UNIQUE CONSTRAINT: (createdUser, storyId)
+    ' end note
+
+    entity GraphicAsset{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name:string
+        description: string
+        imageUrl: string
+        type: GraphicType
+    }
+    entity AudioAsset{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name:string
+        description: string
+        audioUrl: string
+        type: AudioType
+    }
+
+    entity Story {
+        id: text <<PK>>
+        version: text
+        title: text
+        author: text
+
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        approvedBy: bigint <<FK>>
+        approvedAt: Timestamp
+        rejectedReason: string
+        duration: int
+        isPremium: boolean 
+
+        description: text
+        coverImage: bigint <<FK>>
+        entryPoint: text
+        localization: text[]
+    }
+
+    entity StoryState {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        type: text
+        background: text
+        music: text
+        actors: jsonb
+        onEnter: jsonb
+        transitions: jsonb
+        aiContext: text
+    }
+
+    entity StoryScript {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        language: text
+        lines: jsonb
+    }
+
+    entity StoryIntent {
+        id: text <<PK>>
+        storyId: text <<PK>> <<FK>>
+        keywords: text[]
+    }
+
+    entity StoryEmbedding {
+        id: bigserial <<PK>>
+        storyId: text <<FK>>
+        stateId: text
+        content: text
+        embedding: vector(768)
+        createdAt: Timestamp
+    }
+
+    entity ActorConfig {
+        actorId: string
+        riveAsset: string
+        stateMachineName: string
+        riveInputs: object
+        position: object
+    }
+
+    entity OnEnterAction {
+        playScript: string
+        actorAnimations: object
+    }
+
+    entity Transition {
+        on: string
+        intentId: string
+        targetState: string
+    }
+
+    entity ScriptLine {
+        id: string
+        actorId: string
+        text: string
+        audioAsset: bigint <<FK>>
+        ttsConfig: object
+        sfx: string
+        waitAfter: integer
+        animationTrigger: string
+    }
+    
+}
+
+package "Assignment Module" {
+     entity Assignment{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        topicId: bigint <<FK>>
+        name: string
+        description: string
+        total: bigint
+        isShuffle: boolean
+        isPremium: boolean
+    }
+
+    entity QuestionBank{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        assignmentId: bigint <<FK>>
+        questionList: jsonb
+    }
+
+    entity Topic{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name:string
+        description: string
+    }
+}
+
+package "Logs & Payments Module" {
+
+    entity StoryFeedback{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint <<FK>>
+        updatedAt: Timestamp
+        updatedUser: bigint
+        rate: bigint
+        content: string
+    }
+
+    entity ChildrenStoryLog{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyId: bigint <<FK>>
+        content: jsonb
+        createdAt: Timestamp
+        updatedAt: Timestamp
+        completedAt: Timestamp  
+    }
+
+    entity AssignmentLog{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        assignmentId: bigint <<FK>>
+        userId : bigint <<FK>>
+        questionList: jsonb
+        finishedAt: Timestamp
+        version: int
+    }
+
+    entity PreorderStory{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyId: bigint <<FK>>
+        orderDate: date
+    }
+
+    entity BlackListStory{
+        id: bigint <<PK>>
+        status: int
+        userId: bigint <<FK>>
+        storyId: bigint <<FK>>
+    }
+
+    entity TimeLimit{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        userId: bigint<<FK>>
+        limitDate: date
+        limitTime: double
+    }
+
+    entity ParentPayment{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        userId: bigint <<FK>>
+        total: bigint
+        paymentTypeId: bigint <<FK>>
+        startDate: Timestamp
+        endDate: Timestamp
+    }
+
+    entity PaymentType{
+        id: bigint <<PK>>
+        name: string 
+    }
+}
+
+package "Game Module" {
+    entity GameBank{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        gameTypeId: bigint <<FK>>
+        imageUrl: string
+        name: string
+        description: string
+        view: bigint
+        ageGroup: string
+        topicId: bigint <<FK>>
+        isPremium: boolean
+    }
+
+    entity GameType{
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        name: string
+    }
+
+    entity GameLog {
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        userId: bigint <<FK>>
+        gameBankId: bigint <<FK>>
+        score: int
+        finishedAt: Timestamp
+    }
+}
+
+package "Notification Module" {
+    entity Notification {
+        id: bigint <<PK>>
+        status: int
+        createdAt: Timestamp
+        createdUser: bigint
+        updatedAt: Timestamp
+        updatedUser: bigint
+        title: string
+        content: string
+        type: NotificationType
+        isBroadcast: boolean
+    }
+
+    entity NotificationTarget {
+        id: bigint <<PK>>
+        notificationId: bigint <<FK>>
+        userId: bigint <<FK>>
+    }
+
+    entity NotificationLog {
+        id: bigint <<PK>>
+        notificationId: bigint <<FK>>
+        userId: bigint <<FK>>
+        isRead: boolean
+        readAt: Timestamp
+    }
+}
+
+
+' package "Enum"{
+'     enum UserStatus{
+'         0: ACTIVE
+'         1: INACTIVE
+'         2: BANNED
+'     }
+'     enum StoryStatus{
+'        0:PENDING
+'         1:CERTIFIED
+'         2:UNCERTIFIED
+'     }
+'     enum StoryLogStatus{
+'         0: INPROGRESS
+'         1: COMPLETED
+'     }
+'     enum PaymentStatus{
+'         0: PENDING
+'         1: COMPLETED
+'     }
+'     enum GraphicType{
+'         Character
+'         Background
+'         Animation
+'     }
+'     enum AudioType{
+'         VOICEOVER
+'         SOUNDEFFECT
+'         MUSIC
+'     }
+' }
+
+User }o--o| User : parent of
+
+Assignment }o-left-|| Topic
+Assignment ||-right-|| QuestionBank
+
+Story ||-down-o{ ChildrenStoryLog
+Story ||-down-o{ PreorderStory
+Story ||--o{ StoryFeedback
+
+Story ||--o{ StoryState : "1 to many"
+Story ||--o{ StoryScript : "1 to many"
+Story ||--o{ StoryIntent : "1 to many"
+Story ||--o{ StoryEmbedding : "1 to many"
+Story }o--|| GraphicAsset
+
+StoryState *-- ActorConfig : "contains in actors (jsonb)"
+StoryState *-- OnEnterAction : "contains in on_enter (jsonb)"
+StoryState *-- Transition : "contains in transitions (jsonb)"
+StoryScript *-- ScriptLine : "contains in lines (jsonb)"
+ScriptLine }o--|| AudioAsset
+
+
+Assignment ||-down-o{ AssignmentLog
+
+BlackListStory ||--o{ Story
+
+ParentPayment }o--|| User
+ParentPayment }o--|| PaymentType
+
+User ||--|| Role
+User ||-right-|| BlackListStory
+User ||--o{ TimeLimit
+User ||--o{ StoryFeedback : "creates"
+User ||--o{ Story : approves
+User ||--o{ Story : creates
+User ||--o{ AssignmentLog
+User ||--o{ PreorderStory
+User ||--o{ ChildrenStoryLog
+User ||--o{ StoryFeedback
+User ||--o{ GameLog
+
+Notification ||--o{ NotificationTarget : targets
+Notification ||--o{ NotificationLog : logs
+NotificationTarget }o--|| User
+NotificationLog }o--|| User
+
+Permission }o--|| Module
+Permission }o--|| Action
+
+RolePermission }o--|| Role
+RolePermission }o--|| Permission
+
+GameBank }o--|| GameType
+
+
+@enduml

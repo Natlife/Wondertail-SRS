@@ -1,4 +1,3 @@
-
 @startuml
 skinparam nodesep 60
 skinparam ranksep 80
@@ -6,394 +5,417 @@ top to bottom direction
 
 package "User Module" {
     entity User {
-        id: bigint <<PK>>
-        roleId: bigint <<FK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        parentId: bigint
-        name:string
-        userName: string
-        dob: date
-        phone: string
-        email: string
-        password: encoded string
+        id <<PK>>
+        roleId <<FK>>
+        parentId
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        userName
+        dob
+        phone
+        email
+        password
     }
 
-    entity Role{
-        id: bigint <<PK>>
-        name: string
+    entity Role {
+        id <<PK>>
+        name
     }
-    entity Module{
-        id: bigint <<PK>>
-        name: string
-        path: string
+    entity Module {
+        id <<PK>>
+        name
+        path
     }
-    entity Action{
-        id: bigint <<PK>>
-        name: string
-        path: string
+    entity Action {
+        id <<PK>>
+        name
+        path
     }
-    entity Permission{
-        id: bigint <<PK>>
-        moduleId: bigint <<FK>>
-        actionId: bigint <<FK>>
-        name: string
+    entity Permission {
+        id <<PK>>
+        moduleId <<FK>>
+        actionId <<FK>>
+        name
     }
-    entity RolePermission{
-        id: bigint <<PK>>
-        roleId: bigint <<FK>>
-        permissionId: bigint <<FK>>
+    entity RolePermission {
+        id <<PK>>
+        roleId <<FK>>
+        permissionId <<FK>>
     }
 }
 
 package "Story Module" {
-    entity StoryBank{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        approvedBy: bigint <<FK>>
-        approvedAt: Timestamp 
-        rejectedReason: string
-        publishedAt: Timestamp
-        version: int
-        ageGroup: string
-        duration: int
-        topicId: bigint <<FK>>
-        isPremium: boolean 
-        imageUrl: string
-        audioUrl: string
-        name: string
-        description: string
-        view: bigint
+    entity Story {
+        id <<PK>>
+        approvedBy <<FK>>
+        coverImage <<FK>>
+        version
+        title
+        author
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        approvedAt
+        rejectedReason
+        duration
+        isPremium
+        description
+        entryPoint
+        localization
     }
-    
-    entity StoryScene{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        name:string
-        description:string
+
+    entity StoryState {
+        id <<PK>>
+        storyId <<PK>> <<FK>>
+        type
+        background
+        music
+        actors
+        onEnter
+        transitions
+        aiContext
     }
-    
-    entity StoryFeedback{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        rate: bigint
-        content: string
+
+    entity StoryScript {
+        id <<PK>>
+        storyId <<PK>> <<FK>>
+        language
+        lines
     }
-    entity GraphicAsset{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        storySceneId: bigint <<FK>>
-        name:string
-        description: string
-        imageUrl: string
-        type: GraphicType
+
+    entity StoryIntent {
+        id <<PK>>
+        storyId <<PK>> <<FK>>
+        keywords
     }
-    entity AudioAsset{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        storyBankId: bigint <<FK>>
-        storySceneId: bigint <<FK>>
-        name:string
-        description: string
-        audioUrl: string
-        type: AudioType
+
+    entity StoryEmbedding {
+        id <<PK>>
+        storyId <<FK>>
+        stateId
+        content
+        embedding
+        createdAt
     }
-    
+
+    entity StoryFeedback {
+        id <<PK>>
+        storyId <<FK>>
+        createdUser <<FK>>
+        status
+        createdAt
+        updatedAt
+        updatedUser
+        rate
+        content
+    }
+
+    entity UserFeedback {
+        id <<PK>>
+        createdUser <<FK>>
+        status
+        createdAt
+        updatedAt
+        updatedUser
+        rate
+        content
+    }
+
+    entity GraphicAsset {
+        id <<PK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        description
+        imageUrl
+        type
+    }
+
+    entity AudioAsset {
+        id <<PK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        description
+        audioUrl
+        type
+    }
+
+    entity ActorConfig {
+        actorId
+        riveAsset
+        stateMachineName
+        riveInputs
+        position
+    }
+
+    entity OnEnterAction {
+        playScript
+        actorAnimations
+    }
+
+    entity Transition {
+        on
+        intentId
+        targetState
+    }
+
+    entity ScriptLine {
+        id
+        actorId
+        audioAsset <<FK>>
+        text
+        ttsConfig
+        sfx
+        waitAfter
+        animationTrigger
+    }
 }
 
 package "Assignment Module" {
-     entity Assignment{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        topicId: bigint <<FK>>
-        name: string
-        description: string
-        total: bigint
-        isShuffle: boolean
-    
+    entity Topic {
+        id <<PK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        description
     }
 
-    entity QuestionBank{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        assignmentId: bigint <<FK>>
-        questionList: jsonb
+    entity Assignment {
+        id <<PK>>
+        topicId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        description
+        total
+        isShuffle
+        isPremium
     }
 
-    entity Topic{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        name:string
-        description: string
+    entity QuestionBank {
+        id <<PK>>
+        assignmentId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        questionList
     }
 }
 
 package "Logs & Payments Module" {
-    entity ChildrenStoryLog{
-        id: bigint <<PK>>
-        status: int
-        userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
-        content: jsonb
-        createdAt: Timestamp
-        updatedAt: Timestamp
-        completedAt: Timestamp  
+    entity ChildrenStoryLog {
+        id <<PK>>
+        userId <<FK>>
+        storyId <<FK>>
+        status
+        createdAt
+        updatedAt
+        completedAt
+        content
     }
 
-    entity AssignmentLog{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        assignmentId: bigint <<FK>>
-        userId : bigint <<FK>>
-        questionList: jsonb
-        finishedAt: Timestamp
-        version: int
+    entity AssignmentLog {
+        id <<PK>>
+        assignmentId <<FK>>
+        userId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        questionList
+        finishedAt
+        version
     }
 
-    entity PreorderStory{
-        id: bigint <<PK>>
-        status: int
-        userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
-        orderDate: date
+    entity PreorderStory {
+        id <<PK>>
+        userId <<FK>>
+        storyId <<FK>>
+        status
+        orderDate
     }
 
-    entity BlackListStory{
-        id: bigint <<PK>>
-        status: int
-        userId: bigint <<FK>>
-        storyBankId: bigint <<FK>>
+    entity BlackListStory {
+        id <<PK>>
+        userId <<FK>>
+        storyId <<FK>>
+        status
     }
 
-    entity TimeLimit{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        userId: bigint<<FK>>
-        limitDate: date
-        limitTime: double
+    entity TimeLimit {
+        id <<PK>>
+        userId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        limitDate
+        limitTime
     }
 
-    entity ParentPayment{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        userId: bigint <<FK>>
-        total: bigint
-        paymentTypeId: bigint <<FK>>
+    entity ParentPayment {
+        id <<PK>>
+        userId <<FK>>
+        paymentTypeId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        total
+        startDate
+        endDate
     }
 
-    entity PaymentType{
-        id: bigint <<PK>>
-        name: string 
-    }
-
-    entity PaymentDescription{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        parentPaymentId: bigint <<FK>>
-        startDate: Timestamp
-        endDate: Timestamp
+    entity PaymentType {
+        id <<PK>>
+        name
     }
 }
 
 package "Game Module" {
-    entity GameBank{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        gameTypeId: bigint <<FK>>
-        imageUrl: string
-        name: string
-        description: string
-        view: bigint
-        ageGroup: string
-        topicId: bigint <<FK>>
-        isPremium: boolean
+    entity GameType {
+        id <<PK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
     }
 
-    entity GameType{
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        name: string
+    entity GameBank {
+        id <<PK>>
+        gameTypeId <<FK>>
+        topicId <<FK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        name
+        description
+        imageUrl
+        view
+        ageGroup
+        isPremium
     }
 
     entity GameLog {
-    id: bigint <<PK>>
-    status: int
-    createdAt: Timestamp
-    userId: bigint <<FK>>
-    gameBankId: bigint <<FK>>
-    score: int
-    finishedAt: Timestamp
-}
+        id <<PK>>
+        userId <<FK>>
+        gameBankId <<FK>>
+        status
+        createdAt
+        score
+        finishedAt
+    }
 }
 
 package "Notification Module" {
     entity Notification {
-        id: bigint <<PK>>
-        status: int
-        createdAt: Timestamp
-        createdUser: bigint
-        updatedAt: Timestamp
-        updatedUser: bigint
-        title: string
-        content: string
-        type: NotificationType
-        isGlobal: boolean
+        id <<PK>>
+        status
+        createdAt
+        createdUser
+        updatedAt
+        updatedUser
+        title
+        content
+        type
+        isBroadcast
     }
 
     entity NotificationTarget {
-        id: bigint <<PK>>
-        notificationId: bigint <<FK>>
-        userId: bigint <<FK>>
+        id <<PK>>
+        notificationId <<FK>>
+        userId <<FK>>
     }
 
     entity NotificationLog {
-        id: bigint <<PK>>
-        notificationId: bigint <<FK>>
-        userId: bigint <<FK>>
-        isRead: boolean
-        readAt: Timestamp
+        id <<PK>>
+        notificationId <<FK>>
+        userId <<FK>>
+        isRead
+        readAt
     }
 }
 
-
-' package "Enum"{
-'     enum UserStatus{
-'         0: ACTIVE
-'         1: INACTIVE
-'         2: BANNED
-'     }
-'     enum StoryStatus{
-'        0:PENDING
-'         1:CERTIFIED
-'         2:UNCERTIFIED
-'     }
-'     enum StoryLogStatus{
-'         0: INPROGRESS
-'         1: COMPLETED
-'     }
-'     enum PaymentStatus{
-'         0: PENDING
-'         1: COMPLETED
-'     }
-'     enum GraphicType{
-'         Character
-'         Background
-'         Animation
-'     }
-'     enum AudioType{
-'         VOICEOVER
-'         SOUNDEFFECT
-'         MUSIC
-'     }
-' }
-
+' ─── User Module ───────────────────────────────
 User }o--o| User : parent of
-
-StoryBank ||-down-o{ StoryScene : has
-StoryScene }--o{ GraphicAsset : has
-StoryScene }--o{ AudioAsset : has
-StoryBank ||--o{ StoryFeedback : has
-
-Assignment }o-left-|| Topic
-Assignment ||-right-|| QuestionBank
-
-StoryBank ||-down-o{ ChildrenStoryLog
-StoryBank ||-down-o{ PreorderStory
-StoryBank ||-down-o{ GraphicAsset
-StoryBank ||-down-o{ AudioAsset
-
-
-Assignment ||-down-o{ AssignmentLog
-
-ParentPayment ||-right-o{ PaymentDescription : has
-ParentPayment }o--|| User
-ParentPayment }o--|| PaymentType
-
 User ||--|| Role
-User ||--o{ BlackListStory
-User ||--o{ TimeLimit
-User ||--o{ StoryBank : approves
-User ||--o{ StoryBank : creates
-User ||--o{ AssignmentLog
-User ||--o{ PreorderStory
-User ||--o{ ChildrenStoryLog
-User ||--o{ StoryFeedback
-
-Notification ||--o{ NotificationTarget : targets
-Notification ||--o{ NotificationLog : logs
-NotificationTarget }o--|| User
-NotificationLog }o--|| User
-
+RolePermission }o--|| Role
+RolePermission }o--|| Permission
 Permission }o--|| Module
 Permission }o--|| Action
 
-RolePermission }o--|| Role
-RolePermission }o--|| Permission
+' ─── Story Module ──────────────────────────────
+Story }o--|| GraphicAsset
+Story ||--o{ StoryState
+Story ||--o{ StoryScript
+Story ||--o{ StoryIntent
+Story ||--o{ StoryEmbedding
+Story ||--o{ StoryFeedback
+StoryState *-- ActorConfig
+StoryState *-- OnEnterAction
+StoryState *-- Transition
+StoryScript *-- ScriptLine
+ScriptLine }o--|| AudioAsset
+User ||--o{ Story : creates
+User ||--o{ Story : approves
+User ||--o{ StoryFeedback
+User ||--|| UserFeedback
 
+' ─── Assignment Module ─────────────────────────
+Assignment }o-left-|| Topic
+Assignment ||-right-|| QuestionBank
+Assignment ||-down-o{ AssignmentLog
+
+' ─── Game Module ───────────────────────────────
 GameBank }o--|| GameType
+GameBank }o--|| Topic
+GameBank ||--o{ GameLog
+User ||--o{ GameLog
 
+' ─── Logs & Payments ───────────────────────────
+Story ||-down-o{ ChildrenStoryLog
+Story ||-down-o{ PreorderStory
+Story ||--o{ BlackListStory
+User ||--o{ ChildrenStoryLog
+User ||--o{ AssignmentLog
+User ||--o{ PreorderStory
+User ||-right-|| BlackListStory
+User ||--o{ TimeLimit
+User ||--o{ ParentPayment
+ParentPayment }o--|| PaymentType
+
+' ─── Notification Module ───────────────────────
+Notification ||--o{ NotificationTarget
+Notification ||--o{ NotificationLog
+NotificationTarget }o--|| User
+NotificationLog }o--|| User
 
 @enduml
-
