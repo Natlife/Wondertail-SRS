@@ -148,35 +148,35 @@ package "Story Module" {
         createdAt: Timestamp
     }
 
-    entity ActorConfig {
-        actorId: string
-        riveAsset: string
-        stateMachineName: string
-        riveInputs: object
-        position: object
-    }
+    ' entity ActorConfig {
+    '     actorId: string
+    '     riveAsset: string
+    '     stateMachineName: string
+    '     riveInputs: object
+    '     position: object
+    ' }
 
-    entity OnEnterAction {
-        playScript: string
-        actorAnimations: object
-    }
+    ' entity OnEnterAction {
+    '     playScript: string
+    '     actorAnimations: object
+    ' }
 
-    entity Transition {
-        on: string
-        intentId: string
-        targetState: string
-    }
+    ' entity Transition {
+    '     on: string
+    '     intentId: string
+    '     targetState: string
+    ' }
 
-    entity ScriptLine {
-        id: string
-        actorId: string
-        text: string
-        audioAsset: bigint <<FK>>
-        ttsConfig: object
-        sfx: string
-        waitAfter: integer
-        animationTrigger: string
-    }
+    ' entity ScriptLine {
+    '     id: string
+    '     actorId: string
+    '     text: string
+    '     audioAsset: bigint <<FK>>
+    '     ttsConfig: object
+    '     sfx: string
+    '     waitAfter: integer
+    '     animationTrigger: string
+    ' }
     
 }
 
@@ -419,10 +419,10 @@ Story ||--o{ StoryIntent : "1 to many"
 Story ||--o{ StoryEmbedding : "1 to many"
 Story }o--|| GraphicAsset
 
-StoryState *-- ActorConfig : "contains in actors (jsonb)"
-StoryState *-- OnEnterAction : "contains in on_enter (jsonb)"
-StoryState *-- Transition : "contains in transitions (jsonb)"
-StoryScript *-- ScriptLine : "contains in lines (jsonb)"
+' StoryState *-- ActorConfig : "contains in actors (jsonb)"
+' StoryState *-- OnEnterAction : "contains in on_enter (jsonb)"
+' StoryState *-- Transition : "contains in transitions (jsonb)"
+' StoryScript *-- ScriptLine : "contains in lines (jsonb)"
 ScriptLine }o--|| AudioAsset
 
 

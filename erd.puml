@@ -153,35 +153,35 @@ package "Story Module" {
         type
     }
 
-    entity ActorConfig {
-        actorId
-        riveAsset
-        stateMachineName
-        riveInputs
-        position
-    }
+    ' entity ActorConfig {
+    '     actorId
+    '     riveAsset
+    '     stateMachineName
+    '     riveInputs
+    '     position
+    ' }
 
-    entity OnEnterAction {
-        playScript
-        actorAnimations
-    }
+    ' entity OnEnterAction {
+    '     playScript
+    '     actorAnimations
+    ' }
 
-    entity Transition {
-        on
-        intentId
-        targetState
-    }
+    ' entity Transition {
+    '     on
+    '     intentId
+    '     targetState
+    ' }
 
-    entity ScriptLine {
-        id
-        actorId
-        audioAsset <<FK>>
-        text
-        ttsConfig
-        sfx
-        waitAfter
-        animationTrigger
-    }
+    ' entity ScriptLine {
+    '     id
+    '     actorId
+    '     audioAsset <<FK>>
+    '     text
+    '     ttsConfig
+    '     sfx
+    '     waitAfter
+    '     animationTrigger
+    ' }
 }
 
 package "Assignment Module" {
@@ -379,10 +379,10 @@ Story ||--o{ StoryScript
 Story ||--o{ StoryIntent
 Story ||--o{ StoryEmbedding
 Story ||--o{ StoryFeedback
-StoryState *-- ActorConfig
-StoryState *-- OnEnterAction
-StoryState *-- Transition
-StoryScript *-- ScriptLine
+' StoryState *-- ActorConfig
+' StoryState *-- OnEnterAction
+' StoryState *-- Transition
+' StoryScript *-- ScriptLine
 ScriptLine }o--|| AudioAsset
 User ||--o{ Story : creates
 User ||--o{ Story : approves
