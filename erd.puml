@@ -365,7 +365,7 @@ package "Notification Module" {
 }
 
 ' ─── User Module ───────────────────────────────
-User }o--o| User : parent of
+User }o--|| User : parent of
 User ||--|| Role
 RolePermission }o--|| Role
 RolePermission }o--|| Permission
