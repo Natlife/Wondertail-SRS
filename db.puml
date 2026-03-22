@@ -92,7 +92,7 @@ package "Story Module" {
     }
 
     entity Story {
-        id: text <<PK>>
+        id: bigint <<PK>>
         version: text
         title: text
         author: text
@@ -116,7 +116,7 @@ package "Story Module" {
 
     entity StoryState {
         id: text <<PK>>
-        storyId: text <<PK>> <<FK>>
+        storyId: bigint <<PK>> <<FK>>
         type: text
         background: text
         music: text
@@ -128,20 +128,20 @@ package "Story Module" {
 
     entity StoryScript {
         id: text <<PK>>
-        storyId: text <<PK>> <<FK>>
+        storyId: bigint <<PK>> <<FK>>
         language: text
         lines: jsonb
     }
 
     entity StoryIntent {
         id: text <<PK>>
-        storyId: text <<PK>> <<FK>>
+        storyId: bigint <<PK>> <<FK>>
         keywords: text[]
     }
 
     entity StoryEmbedding {
         id: bigserial <<PK>>
-        storyId: text <<FK>>
+        storyId: bigint <<FK>>
         stateId: text
         content: text
         embedding: vector(768)
@@ -221,7 +221,7 @@ package "Assignment Module" {
 
 package "Logs & Payments Module" {
 
-    entity StoryFeedback{
+    entity UserFeedback{
         id: bigint <<PK>>
         status: int
         createdAt: Timestamp
@@ -442,7 +442,7 @@ User ||--o{ Story : creates
 User ||--o{ AssignmentLog
 User ||--o{ PreorderStory
 User ||--o{ ChildrenStoryLog
-User ||--o{ StoryFeedback
+User ||--o{ UserFeedback
 User ||--o{ GameLog
 
 Notification ||--o{ NotificationTarget : targets
